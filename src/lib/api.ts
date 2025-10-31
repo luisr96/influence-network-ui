@@ -42,3 +42,8 @@ export const getInfluenceGraph = async (
   const response = await api.get(`/api/entities/${id}/influences`);
   return response.data;
 };
+
+export const getRandomEntity = async (): Promise<EntitySummary> => {
+  const response = await api.get("/api/random");
+  return response.data;
+};

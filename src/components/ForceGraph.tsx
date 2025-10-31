@@ -155,13 +155,75 @@ export default function ForceGraph({ data, onNodeClick }: ForceGraphProps) {
       .style("pointer-events", "none")
       .style("user-select", "none");
 
+    const tooltip = d3
+      .select(containerRef.current)
+      .append("div")
+      .style("position", "absolute")
+      .style("visibility", "hidden")
+      .style("background-color", "white")
+      .style("border", "1px solid #ddd")
+      .style("border-radius", "4px")
+      .style("padding", "8px")
+      .style("pointer-events", "none")
+      .style("font-size", "12px")
+      .style("box-shadow", "0 2px 4px rgba(0,0,0,0.1)")
+      .style("z-index", "1000");
+
+    node
+      .on("mouseenter", (event, d) => {
+        // Show tooltip
+        tooltip.style("visibility", "visible").html(`
+          ${d.group == "center" ? "" : d.group.replace(/_/g, " ")}
+          <strong>${d.name}</strong><br/>
+          Type: ${d.type}<br/>
+        `);
+
+        // Highlight node
+        d3.select(event.currentTarget)
+          .select("circle")
+          .transition()
+          .duration(200)
+          .attr("r", d.group === "center" ? 15 : 10)
+          .attr("stroke-width", 3);
+      })
+      .on("mousemove", (event) => {
+        tooltip
+          .style(
+            "top",
+            `${
+              event.pageY -
+              containerRef.current!.getBoundingClientRect().top -
+              10
+            }px`
+          )
+          .style(
+            "left",
+            `${
+              event.pageX -
+              containerRef.current!.getBoundingClientRect().left +
+              10
+            }px`
+          );
+      })
+      .on("mouseleave", (event, d) => {
+        // Hide tooltip
+        tooltip.style("visibility", "hidden");
+
+        // Reset node
+        d3.select(event.currentTarget)
+          .select("circle")
+          .transition()
+          .duration(200)
+          .attr("r", d.group === "center" ? 12 : 8)
+          .attr("stroke-width", 2);
+      });
+
     node.on("click", (event, d) => {
       event.stopPropagation();
       onNodeClick(d.id);
     });
 
     function ticked() {
-      // Constrain nodes to viewport
       nodes.forEach((d) => {
         d.x = Math.max(30, Math.min(width - 30, d.x || 0));
         d.y = Math.max(30, Math.min(height - 30, d.y || 0));
@@ -182,6 +244,9 @@ export default function ForceGraph({ data, onNodeClick }: ForceGraphProps) {
       if (!event.active) simulation.alphaTarget(0.3).restart();
       event.subject.fx = event.subject.x;
       event.subject.fy = event.subject.y;
+
+      // Hide tooltip when dragging starts
+      tooltip.style("visibility", "hidden");
     }
 
     function dragged(event: d3.D3DragEvent<SVGGElement, GraphNode, GraphNode>) {
@@ -198,13 +263,11 @@ export default function ForceGraph({ data, onNodeClick }: ForceGraphProps) {
     }
 
     simulation.on("tick", ticked);
-
-    // Stop simulation after it stabilizes
     simulation.alpha(1);
 
-    // Cleanup
     return () => {
       simulation.stop();
+      tooltip.remove();
     };
   }, [data, onNodeClick]);
 
@@ -218,7 +281,7 @@ export default function ForceGraph({ data, onNodeClick }: ForceGraphProps) {
         style={{
           width: "100%",
           height: "100%",
-          backgroundColor: "#fafafa",
+          backgroundColor: "#fff",
           display: "block",
         }}
       />

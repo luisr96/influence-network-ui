@@ -1,9 +1,18 @@
 import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { MantineProvider, AppShell, Burger, Group, Title } from "@mantine/core";
+import {
+  MantineProvider,
+  AppShell,
+  Burger,
+  Group,
+  Title,
+  Button,
+} from "@mantine/core";
+import { Shuffle } from "lucide-react";
 import { useDisclosure } from "@mantine/hooks";
 import SearchBar from "./components/SearchBar";
 import GraphVisualization from "./components/GraphVisualization";
+import { getRandomEntity } from "./lib/api";
 import "./index.css";
 
 const queryClient = new QueryClient({
@@ -19,7 +28,18 @@ const queryClient = new QueryClient({
 function AppContent() {
   const [opened, { toggle }] = useDisclosure();
   const [selectedEntityId, setSelectedEntityId] = useState<string | null>(null);
-
+  const [isLoadingRandom, setIsLoadingRandom] = useState(false);
+  const handleRandomEntity = async () => {
+    setIsLoadingRandom(true);
+    try {
+      const entity = await getRandomEntity();
+      setSelectedEntityId(entity.id);
+    } catch (error) {
+      console.error("Error fetching random entity:", error);
+    } finally {
+      setIsLoadingRandom(false);
+    }
+  };
   return (
     <AppShell
       header={{ height: 70 }}
@@ -39,7 +59,13 @@ function AppContent() {
               hiddenFrom="sm"
               size="sm"
             />
-            <Title order={2}>Influence Network</Title>
+            <Title
+              order={2}
+              style={{ cursor: "pointer" }}
+              onClick={() => setSelectedEntityId(null)}
+            >
+              Influence Network
+            </Title>
           </Group>
           <div
             style={{
@@ -86,9 +112,18 @@ function AppContent() {
               <p style={{ fontSize: "1.25rem", marginBottom: "0.5rem" }}>
                 Search for an entity to explore influences
               </p>
-              <p style={{ fontSize: "0.875rem" }}>
+              <p style={{ fontSize: "0.875rem", marginBottom: "1.5rem" }}>
                 Try "Nirvana," "Expressionism," or "French"
               </p>
+              <Button
+                leftSection={<Shuffle size={18} />}
+                variant="light"
+                size="md"
+                onClick={handleRandomEntity}
+                loading={isLoadingRandom}
+              >
+                or explore a random network
+              </Button>
             </div>
           </div>
         )}
