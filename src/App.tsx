@@ -7,6 +7,7 @@ import {
   Group,
   Title,
   Button,
+  Stack,
 } from "@mantine/core";
 import { Shuffle } from "lucide-react";
 import { useDisclosure } from "@mantine/hooks";
@@ -42,7 +43,7 @@ function AppContent() {
   };
   return (
     <AppShell
-      header={{ height: 70 }}
+      header={{ height: { base: 120, sm: 70 } }}
       navbar={{
         width: 300,
         breakpoint: "sm",
@@ -51,28 +52,53 @@ function AppContent() {
       padding="md"
     >
       <AppShell.Header>
-        <Group h="100%" px="md" justify="space-between">
-          <Group>
-            <Burger
-              opened={opened}
-              onClick={toggle}
-              hiddenFrom="sm"
-              size="sm"
-            />
+        <Stack
+          gap="xs"
+          p="md"
+          style={{ height: "100%" }}
+          justify="center"
+          hiddenFrom="sm"
+        >
+          <Group justify="space-between" wrap="nowrap">
+            <Burger opened={opened} onClick={toggle} size="sm" />
             <Title
               order={2}
-              style={{ cursor: "pointer" }}
+              style={{
+                cursor: "pointer",
+                fontSize: "clamp(1.125rem, 4vw, 1.5rem)",
+                whiteSpace: "nowrap",
+                flex: 1,
+                textAlign: "center",
+              }}
               onClick={() => setSelectedEntityId(null)}
             >
               Influence Network
             </Title>
+            <div style={{ width: 28, visibility: "hidden" }} />
           </Group>
+          <div>
+            <SearchBar onSelectEntity={setSelectedEntityId} />
+          </div>
+        </Stack>
+        <Group h="100%" px="md" justify="space-between" visibleFrom="sm">
+          <Title
+            order={2}
+            style={{ cursor: "pointer" }}
+            onClick={() => setSelectedEntityId(null)}
+          >
+            Influence Network
+          </Title>
+
           <div
             style={{
-              flex: 1,
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "100%",
               maxWidth: 600,
-              marginLeft: "auto",
-              marginRight: "auto",
+              paddingLeft: "1rem",
+              paddingRight: "1rem",
             }}
           >
             <SearchBar onSelectEntity={setSelectedEntityId} />
@@ -85,10 +111,11 @@ function AppContent() {
 
       <AppShell.Main
         style={{
-          height: "calc(100vh - 70px)",
+          height: "calc(100vh - 120px)",
           padding: 0,
           overflow: "hidden",
         }}
+        className="app-main"
       >
         {selectedEntityId ? (
           <div style={{ height: "100%", width: "100%" }}>
@@ -106,13 +133,24 @@ function AppContent() {
               justifyContent: "center",
               height: "100%",
               color: "#666",
+              padding: "1rem",
             }}
           >
             <div style={{ textAlign: "center" }}>
-              <p style={{ fontSize: "1.25rem", marginBottom: "0.5rem" }}>
+              <p
+                style={{
+                  fontSize: "clamp(1rem, 3vw, 1.25rem)",
+                  marginBottom: "0.5rem",
+                }}
+              >
                 Search for an entity to explore influences
               </p>
-              <p style={{ fontSize: "0.875rem", marginBottom: "1.5rem" }}>
+              <p
+                style={{
+                  fontSize: "clamp(0.75rem, 2.5vw, 0.875rem)",
+                  marginBottom: "1.5rem",
+                }}
+              >
                 Try "Nirvana," "Expressionism," or "French"
               </p>
               <Button

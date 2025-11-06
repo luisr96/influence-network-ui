@@ -97,43 +97,6 @@ export default function GraphVisualization({
         flexDirection: "column",
       }}
     >
-      {/* Stats Bar at Top */}
-      <div
-        style={{
-          padding: "16px",
-          borderBottom: "1px solid #e9ecef",
-          backgroundColor: "#fff",
-        }}
-      >
-        <Group justify="center" gap="xl">
-          <Group gap="xs">
-            <Text size="sm" fw={600}>
-              Influenced by:
-            </Text>
-            <Badge size="lg" variant="light" color="green">
-              {graphData.influenced_by?.length || 0}
-            </Badge>
-          </Group>
-          <Group gap="xs">
-            <Text size="sm" fw={600}>
-              Influences:
-            </Text>
-            <Badge size="lg" variant="light" color="orange">
-              {graphData.influences?.length || 0}
-            </Badge>
-          </Group>
-          <Group gap="xs">
-            <Text size="sm" fw={600}>
-              Total connections:
-            </Text>
-            <Badge size="lg" variant="light" color="blue">
-              {(graphData.influenced_by?.length || 0) +
-                (graphData.influences?.length || 0)}
-            </Badge>
-          </Group>
-        </Group>
-      </div>
-
       {/* Graph takes remaining space */}
       <div style={{ flex: 1, position: "relative", minHeight: 0 }}>
         <ForceGraph data={graphData} onNodeClick={onNodeClick} />
