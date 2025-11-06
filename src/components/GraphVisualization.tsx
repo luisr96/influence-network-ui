@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Text, Stack, Group, Loader, Badge, Alert } from "@mantine/core";
+import { Text, Stack, Loader, Alert } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
 import { getInfluenceGraph } from "../lib/api";
 import ForceGraph from "./ForceGraph";
